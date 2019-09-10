@@ -16,3 +16,31 @@
  */
 
 package com.example.android.devbyteviewer.work
+
+import android.content.Context
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.example.android.devbyteviewer.database.getDatabase
+import com.example.android.devbyteviewer.repository.VideosRepository
+import retrofit2.HttpException
+
+/**
+ * Worker class that will refresh our database playlist at night.
+ */
+class RefreshDataWorker(appContext: Context, params: WorkerParameters): CoroutineWorker(appContext, params){
+    /**
+     * Update task for worker that pre-fetches playlist content.
+     * @return Success when the HTTP call was successful, Retry on failure (performing another
+     * request attempt at a later time).
+     */
+    override suspend fun doWork(): Payload {
+        val database = getDatabase(applicationContext)
+        val repository = VideosRepository(database)
+        return try{
+            repository.refreshVideos()
+            Payload(Result.SUCCESS)
+        } catch (exception: HttpException){
+            Payload(Result.RETRY)
+        }
+    }
+}
