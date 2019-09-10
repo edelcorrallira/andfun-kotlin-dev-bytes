@@ -28,6 +28,11 @@ import retrofit2.HttpException
  * Worker class that will refresh our database playlist at night.
  */
 class RefreshDataWorker(appContext: Context, params: WorkerParameters): CoroutineWorker(appContext, params){
+
+    companion object{
+        const val WORK_NAME = "RefreshDataWorker"
+    }
+
     /**
      * Update task for worker that pre-fetches playlist content.
      * @return Success when the HTTP call was successful, Retry on failure (performing another
